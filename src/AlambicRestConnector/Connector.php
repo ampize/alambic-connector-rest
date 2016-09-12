@@ -42,6 +42,8 @@ class Connector
         }
         $start = !empty($payload['pipelineParams']['start']) ? $payload['pipelineParams']['start'] : null;
         $limit = !empty($payload['pipelineParams']['limit']) ? $payload['pipelineParams']['limit'] : null;
+        $orderBy = !empty($payload['pipelineParams']['orderBy']) ? $payload['pipelineParams']['orderBy'] : null;
+        $orderByDirection = !empty($payload['pipelineParams']['orderByDirection']) ? $payload['pipelineParams']['orderByDirection'] : null;
 
         if (isset($start) && isset($configs["startFieldName"])) {
             $args[$configs["startFieldName"]] = $start;
@@ -51,12 +53,20 @@ class Connector
             $args[$configs["limitFieldName"]] = $limit;
         }
 
-        if (isset($orderBy) && isset($configs["orderFieldName"])) {
-            $args[$configs["orderFieldName"]] = $orderBy;
+        if (isset($orderBy) && isset($configs["orderByFieldName"])) {
+            $args[$configs["orderByFieldName"]] = $orderBy;
         }
 
-        if (isset($orderByDirection) && isset($configs["orderDirectionFieldName"])) {
-            $args[$configs["orderDirectionFieldName"]] = $orderBy;
+        if (isset($orderByDirection) && isset($configs["orderByDirectionFieldName"])) {
+            switch ($orderByDirection) {
+                case "ASC":
+                    $order = isset($configs["ascendantValue"]) ? $configs["ascendantValue"] : $orderByDirection;
+                    break;
+                case "DESC":
+                    $order = isset($configs["descendantValue"]) ? $configs["descendantValue"] : $orderByDirection;
+                    break;
+            }
+            $args[$configs["orderByDirectionFieldName"]] = $order;
         }
 
         $result = [$client->run($args)];
