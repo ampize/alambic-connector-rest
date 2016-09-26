@@ -24,6 +24,10 @@ class Connector
             throw new Exception('Endpoint segment required');
         }
 
+        if (isset($baseConfig["args"])) {
+            $payload["args"] = array_merge($baseConfig["args"],$payload["args"]);
+        }
+
         $host = $baseConfig["baseUrl"] . "/" . $this->injectArgsInSegment($payload["args"], $configs["segment"]);
 
         $client = ClientBuilder::create()->setHost($host)->build();
@@ -70,10 +74,12 @@ class Connector
         }
 
         $result = [$client->run($args)];
+        $payload["response"]=$result[0];
         if (isset($configs["resultsPath"])) {
-            $payload["response"]=$result[0][$configs["resultsPath"]];
-        } else {
-            $payload["response"]=$result[0];
+            $paths = explode('.',$configs["resultsPath"]);
+            foreach($paths as $path) {
+                $payload["response"]=$payload["response"][$path];
+            }
         }
         return $payload;
     }
