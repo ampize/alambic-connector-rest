@@ -28,6 +28,14 @@ class Connector
             $payload["args"] = array_merge($baseConfig["args"],$payload["args"]);
         }
 
+        if (isset($baseConfig["authQueryParams"])) {
+            $authQueryParams = [];
+            foreach ($baseConfig["authQueryParams"] as $param) {
+                $authQueryParams[$param["property"]] = $param["value"];
+            }
+            $payload["args"] = array_merge($authQueryParams,$payload["args"]);
+        }
+
         $host = $baseConfig["baseUrl"] . "/" . $this->injectArgsInSegment($payload["args"], $configs["segment"]);
 
         $client = ClientBuilder::create()->setHost($host)->build();
@@ -74,6 +82,7 @@ class Connector
         }
 
         $result = [$client->run($args)];
+
         $payload["response"]=$result[0];
         if (isset($configs["resultsPath"])) {
             $paths = explode('.',$configs["resultsPath"]);
