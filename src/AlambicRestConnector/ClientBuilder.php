@@ -303,7 +303,6 @@ class ClientBuilder
                     foreach ($sslOptions as $key => $value) {
                         $request['client'][$key] = $value;
                     }
-
                     // Send the request using the handler and return the response.
                     return $handler($request);
                 };
@@ -319,6 +318,11 @@ class ClientBuilder
 
         if (is_null($this->connectionFactory)) {
             $connectionParams = [];
+            if (isset($this->authHeaderParams)) {
+                foreach($this->authHeaderParams as $authHeaderParam) {
+                    $connectionParams['headers'][$authHeaderParam['property']] = [$authHeaderParam['value']];
+                }
+            }
             $this->connectionFactory = new ConnectionFactory($this->handler, $connectionParams, $this->serializer, $this->logger, $this->tracer);
         }
 

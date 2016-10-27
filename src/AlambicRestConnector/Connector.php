@@ -38,8 +38,10 @@ class Connector
 
         $host = $baseConfig["baseUrl"] . "/" . $this->injectArgsInSegment($payload["args"], $configs["segment"]);
 
-        $client = ClientBuilder::create()->setHost($host)->build();
+        $authHeaderParams = isset($baseConfig["authHeaderParams"]) ? $baseConfig["authHeaderParams"] : null;
 
+        $client = ClientBuilder::create()->setHost($host)->setAuthHeaderParams($authHeaderParams)->build();
+        
         return $payload["isMutation"] ? $this->execute($payload, $client) : $this->resolve($payload, $client, $configs);
     }
 
