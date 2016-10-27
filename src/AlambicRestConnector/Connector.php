@@ -36,12 +36,24 @@ class Connector
             $payload["args"] = array_merge($authQueryParams,$payload["args"]);
         }
 
+        if (isset($baseConfig["authUsername"]) && isset($baseConfig["authPassword"])) {
+            $protocol = parse_url($baseConfig["baseUrl"], PHP_URL_SCHEME);
+            switch ($protocol) {
+                case "http":
+                    $baseConfig["baseUrl"] = "http://".$baseConfig["authUsername"].":".$baseConfig["authPassword"]."@".substr($baseConfig["baseUrl"],7);
+                    break;
+                case "https":
+                    $baseConfig["baseUrl"] = "https://".$baseConfig["authUsername"].":".$baseConfig["authPassword"]."@".substr($baseConfig["baseUrl"],8);
+                    break;
+            }
+        }
+        
         $host = $baseConfig["baseUrl"] . "/" . $this->injectArgsInSegment($payload["args"], $configs["segment"]);
 
         $authHeaderParams = isset($baseConfig["authHeaderParams"]) ? $baseConfig["authHeaderParams"] : null;
 
         $client = ClientBuilder::create()->setHost($host)->setAuthHeaderParams($authHeaderParams)->build();
-        
+
         return $payload["isMutation"] ? $this->execute($payload, $client) : $this->resolve($payload, $client, $configs);
     }
 
