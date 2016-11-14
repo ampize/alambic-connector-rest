@@ -1,5 +1,5 @@
 {
-    "name": "webtales/alambic-connector-rest",
+    "name": "ampize/alambic-connector-rest",
     "description": "Alambic connector for RESTful APIs",
     "keywords": ["alambic","connector", "rest"],
     "type": "library",
