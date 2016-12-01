@@ -45,6 +45,9 @@ class ClientBuilder
     /** @var array */
     private $host;
 
+    /** @var array */
+    private $authHeaderParams;
+
     /** @var null|array  */
     private $sslCert = null;
 
@@ -235,6 +238,17 @@ class ClientBuilder
     public function setHost($host)
     {
         $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * @param array $authHeaderParams
+     * @return $this
+     */
+    public function setAuthHeaderParams($authHeaderParams)
+    {
+        $this->authHeaderParams = $authHeaderParams;
 
         return $this;
     }
