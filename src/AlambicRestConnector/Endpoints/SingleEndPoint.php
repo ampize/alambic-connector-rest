@@ -37,15 +37,6 @@ class SingleEndPoint extends AbstractEndpoint
     }
 
     /**
-     * @return string[]
-     */
-    public function getParamWhitelist()
-    {
-        return array(
-        );
-    }
-
-    /**
      * @return string
      */
     public function getMethod()

@@ -47,7 +47,7 @@ class Connector
                     break;
             }
         }
-        
+
         $host = $baseConfig["baseUrl"] . "/" . $this->injectArgsInSegment($payload["args"], $configs["segment"]);
 
         $authHeaderParams = isset($baseConfig["authHeaderParams"]) ? $baseConfig["authHeaderParams"] : null;

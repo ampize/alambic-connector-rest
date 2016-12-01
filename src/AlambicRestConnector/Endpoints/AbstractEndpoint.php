@@ -32,11 +32,6 @@ abstract class AbstractEndpoint
     protected $serializer;
 
     /**
-     * @return string[]
-     */
-    abstract public function getParamWhitelist();
-
-    /**
      * @return string
      */
     abstract public function getURI();
@@ -55,14 +50,7 @@ abstract class AbstractEndpoint
      */
     public function setParams($params)
     {
-        if (is_object($params) === true) {
-            $params = (array) $params;
-        }
-
-        //$this->checkUserParams($params);
-        $params = $this->convertCustom($params);
-        $this->extractOptions($params);
-        $this->params = $this->convertArraysToStrings($params);
+        $this->params = $params;
 
         return $this;
     }
@@ -105,78 +93,6 @@ abstract class AbstractEndpoint
     public function getBody()
     {
         return $this->body;
-    }
-
-    /**
-     * @param array $params
-     *
-     * @throws \AlambicRestConnector\Common\Exceptions\UnexpectedValueException
-     */
-    private function checkUserParams($params)
-    {
-        if (isset($params) !== true) {
-            return; //no params, just return.
-        }
-
-        $whitelist = array_merge($this->getParamWhitelist(), array('client', 'custom', 'filter_path'));
-
-        foreach ($params as $key => $value) {
-            if (array_search($key, $whitelist) === false) {
-                throw new UnexpectedValueException(sprintf(
-                    '"%s" is not a valid parameter. Allowed parameters are: "%s"',
-                    $key,
-                    implode('", "', $whitelist)
-                ));
-            }
-        }
-    }
-
-    /**
-     * @param $params       Note: this is passed by-reference!
-     */
-    private function extractOptions(&$params)
-    {
-        // Extract out client options, then start transforming
-        if (isset($params['client']) === true) {
-            $this->options['client'] = $params['client'];
-            unset($params['client']);
-        }
-
-        $ignore = isset($this->options['client']['ignore']) ? $this->options['client']['ignore'] : null;
-        if (isset($ignore) === true) {
-            if (is_string($ignore)) {
-                $this->options['client']['ignore'] = explode(",", $ignore);
-            } elseif (is_array($ignore)) {
-                $this->options['client']['ignore'] = $ignore;
-            } else {
-                $this->options['client']['ignore'] = [$ignore];
-            }
-        }
-    }
-
-    private function convertCustom($params)
-    {
-        if (isset($params['custom']) === true) {
-            foreach ($params['custom'] as $k => $v) {
-                $params[$k] = $v;
-            }
-            unset($params['custom']);
-        }
-
-        return $params;
-    }
-
-    private function convertArraysToStrings($params)
-    {
-        foreach ($params as $key => &$value) {
-            if (!($key === 'client' || $key == 'custom') && is_array($value) === true) {
-                if ($this->isNestedArray($value) !== true) {
-                    $value = implode(",", $value);
-                }
-            }
-        }
-
-        return $params;
     }
 
     private function isNestedArray($a)
