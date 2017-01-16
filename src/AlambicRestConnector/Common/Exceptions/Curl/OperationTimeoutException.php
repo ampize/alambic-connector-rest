@@ -7,7 +7,7 @@ use AlambicRestConnector\Common\Exceptions\TransportException;
 
 /**
  * Class OperationTimeoutException
-  */
+ */
 class OperationTimeoutException extends TransportException implements AlambicRestConnectorException
 {
 }

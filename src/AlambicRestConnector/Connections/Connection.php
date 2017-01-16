@@ -4,6 +4,7 @@ namespace AlambicRestConnector\Connections;
 
 use AlambicRestConnector\Common\Exceptions\BadRequest400Exception;
 use AlambicRestConnector\Common\Exceptions\Forbidden403Exception;
+use AlambicRestConnector\Common\Exceptions\MaxRetriesException;
 use AlambicRestConnector\Common\Exceptions\Missing404Exception;
 use AlambicRestConnector\Common\Exceptions\RequestTimeout408Exception;
 use AlambicRestConnector\Common\Exceptions\Conflict409Exception;
@@ -85,7 +86,7 @@ class Connection implements ConnectionInterface
             $connectionParams['client']['curl'][CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
             $connectionParams['client']['curl'][CURLOPT_USERPWD] = $hostDetails['user'].':'.$hostDetails['pass'];
         }
-
+        $connectionParams['client']['curl'][CURLOPT_HTTPHEADER] = ['Expect:'];
         $host = $hostDetails['host'];
         $path = null;
         if (isset($hostDetails['path']) === true) {
@@ -156,7 +157,7 @@ class Connection implements ConnectionInterface
                     if ($response['error'] instanceof ConnectException || $response['error'] instanceof RingException) {
                         $this->log->warning("Curl exception encountered.");
 
-                        //$exception = $this->getCurlRetryException($request, $response);
+                        $exception = $this->getCurlRetryException($request, $response);
 
                         $this->logRequestFail(
                             $request['http_method'],
@@ -343,6 +344,31 @@ class Connection implements ConnectionInterface
     public function getHost()
     {
         return $this->host;
+    }
+
+    /**
+     * @param $request
+     * @param $response
+     * @return \Elasticsearch\Common\Exceptions\Curl\CouldNotConnectToHost|\Elasticsearch\Common\Exceptions\Curl\CouldNotResolveHostException|\Elasticsearch\Common\Exceptions\Curl\OperationTimeoutException|\Elasticsearch\Common\Exceptions\MaxRetriesException
+     */
+    protected function getCurlRetryException($request, $response)
+    {
+        $exception = null;
+        $message = $response['error']->getMessage();
+        $exception = new MaxRetriesException($message);
+        switch ($response['curl']['errno']) {
+            case 6:
+                $exception = new CouldNotResolveHostException($message, null, $exception);
+                break;
+            case 7:
+                $exception = new CouldNotConnectToHost($message, null, $exception);
+                break;
+            case 28:
+                $exception = new OperationTimeoutException($message, null, $exception);
+                break;
+        }
+
+        return $exception;
     }
 
     /**

@@ -7,7 +7,7 @@ use AlambicRestConnector\Common\Exceptions\TransportException;
 
 /**
  * Class CouldNotResolveHostException
-  */
+ */
 class CouldNotResolveHostException extends TransportException implements AlambicRestConnectorException
 {
 }
