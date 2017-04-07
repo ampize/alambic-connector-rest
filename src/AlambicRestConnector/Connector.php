@@ -70,6 +70,7 @@ class Connector
         $limit = !empty($payload['pipelineParams']['limit']) ? $payload['pipelineParams']['limit'] : null;
         $orderBy = !empty($payload['pipelineParams']['orderBy']) ? $payload['pipelineParams']['orderBy'] : null;
         $orderByDirection = !empty($payload['pipelineParams']['orderByDirection']) ? $payload['pipelineParams']['orderByDirection'] : null;
+        $multivalued=isset($payload["multivalued"]) ? $payload["multivalued"] : false;
 
         if (isset($start) && isset($configs["startFieldName"])) {
             $args[$configs["startFieldName"]] = $start;
@@ -103,6 +104,11 @@ class Connector
             foreach($paths as $path) {
                 $payload["response"]=$payload["response"][$path];
             }
+        }
+        if ($multivalued) {
+            $payload['response'] = (!empty($payload['response'])) ? $payload['response'] : null;
+        } else {
+            if (is_array($payload['response'])) $payload['response'] = $payload['response'][0];
         }
         return $payload;
     }
