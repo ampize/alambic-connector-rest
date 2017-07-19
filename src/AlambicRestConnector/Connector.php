@@ -122,6 +122,7 @@ class Connector
             $segment = str_replace("{".$key."}", $value, $segment, $count);
             if ($count>0) unset($args[$key]);
         }
+        $segment = preg_replace("/\{[^}]+\}/","",$segment);
         return $segment;
     }
 
