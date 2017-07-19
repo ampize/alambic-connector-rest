@@ -99,17 +99,24 @@ class Connector
         $result = [$client->run($args)];
 
         $payload["response"]=$result[0];
-        if (isset($configs["resultsPath"])) {
-            $paths = explode('.',$configs["resultsPath"]);
+        $hasResultsPath=false;
+        if(!$multivalued&&isset($configs["detailResultsPath"])){
+            $hasResultsPath=true;
+            $resultsPath=$configs["detailResultsPath"];
+        } elseif (isset($configs["resultsPath"])) {
+            $hasResultsPath=true;
+            $resultsPath=$configs["resultsPath"];
+        }
+        if ($hasResultsPath) {
+            $paths = explode('.',$resultsPath);
             foreach($paths as $path) {
+                if(is_numeric($path)){
+                    $path=(int) $path;
+                }
                 $payload["response"]=$payload["response"][$path];
             }
         }
-        if ($multivalued) {
-            $payload['response'] = (!empty($payload['response'])) ? $payload['response'] : null;
-        } else {
-            if (is_array($payload['response'])) $payload['response'] = $payload['response'][0];
-        }
+        $payload['response'] = (!empty($payload['response'])) ? $payload['response'] : null;
         return $payload;
     }
 
