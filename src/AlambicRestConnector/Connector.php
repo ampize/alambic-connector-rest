@@ -100,10 +100,10 @@ class Connector
 
         $payload["response"]=$result[0];
         $hasResultsPath=false;
-        if(!$multivalued&&isset($configs["detailResultsPath"])){
+        if(!$multivalued&&!empty($configs["detailResultsPath"])){
             $hasResultsPath=true;
             $resultsPath=$configs["detailResultsPath"];
-        } elseif (isset($configs["resultsPath"])) {
+        } elseif (!empty($configs["resultsPath"])) {
             $hasResultsPath=true;
             $resultsPath=$configs["resultsPath"];
         }
