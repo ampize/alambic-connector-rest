@@ -19,7 +19,7 @@ class Connector
         if (empty($baseConfig["baseUrl"])) {
             throw new Exception('Base url required');
         }
-        if(isset($payload["multivalued"])&&!empty($configs["detailSegment"])){
+        if(empty($payload["multivalued"])&&!empty($configs["detailSegment"])){
             $configs["segment"]=$configs["detailSegment"];
         }
         if (!isset($configs["segment"])) {
