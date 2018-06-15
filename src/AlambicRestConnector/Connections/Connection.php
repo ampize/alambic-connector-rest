@@ -87,6 +87,8 @@ class Connection implements ConnectionInterface
             $connectionParams['client']['curl'][CURLOPT_USERPWD] = $hostDetails['user'].':'.$hostDetails['pass'];
         }
 
+        $connectionParams['client']['curl'][CURLOPT_FOLLOWLOCATION]=1;
+        
         $host = $hostDetails['host'];
         $path = null;
         if (isset($hostDetails['path']) === true) {
