@@ -75,7 +75,13 @@ class Connector
         $multivalued=isset($payload["multivalued"]) ? $payload["multivalued"] : false;
 
         if (isset($start) && isset($configs["startFieldName"])) {
-            $args[$configs["startFieldName"]] = $start;
+            if(!empty($configs["usePageNumber"])){
+                $pageNumber=(int) $start/($limit-1);
+                $args[$configs["startFieldName"]]=$pageNumber;
+            } else {
+                $args[$configs["startFieldName"]] = $start;
+            }
+
         }
 
         if (isset($limit) && isset($configs["limitFieldName"])) {
